@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="goods-list"></div>
+    <script>
+        'use strict';
+        debugger;
+        class GoodsItem {
+            constructor(title, price) {
+                this.title = title;
+                this.price = price;
+
+            }
+            render() {
+                return `<div class="goods-item">
+            <h3>${this.title}</h3>
+            <p>${this.price}</p>
+        </div>`;
+            }
+        }
+
+        class GoodsList {
+            constructor() {
+                this.goods = [];
+            }
+            fetchGoods() {
+                this.goods = [{
+                        title: 'Shirt',
+                        price: 150
+                    },
+                    {
+                        title: 'Socks',
+                        price: 50
+                    },
+                    {
+                        title: 'Jacket',
+                        price: 350
+                    },
+                    {
+                        title: 'Shoes',
+                        price: 250
+                    },
+                ];
+            }
+
+            getCount() {
+                let count = this.goods.reduce((result, goods) => result + goods.price, 0);
+                return count;
+            }
+
+            render() {
+                let listHtml = '';
+                this.goods.forEach(good => {
+                    const goodItem = new GoodsItem(good.title, good.price);
+                    listHtml += goodItem.render();
+                });
+                document.querySelector('.goods-list').innerHTML = listHtml;
+                document.querySelector('.goods-list').insertAdjacentHTML('beforeend',
+                    `<div class="goods-count">
+                        <p style="font-weight: bold; font-size: 24px">Total</p>
+                        <p style=" font-size: 20px">${this.getCount()}</p>
+                        </div>`);
+            }
+        }
+
+        const list = new GoodsList();
+        list.fetchGoods();
+        list.render();
+        // list.getCount();
+    </script>
+</body>
+
+</html>
