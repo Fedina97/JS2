@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: pink;
+}
+
+.header-line {
+    padding: 10px 0;
+    display: flex;
+}
+
+.logo {
+    margin-left: 10px;
+    display: flex;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    background: brown;
+    border-radius: 50px;
+    margin-right: 15px;
+}
+
+input {
+    margin-left: 20px;
+    width: 600px;
+}
+
+.cart-button {
+    border: 1px solid black;
+    display: flex;
+    justify-content: flex-end;
+}
+
+button {
+    border-radius: 50px;
+    margin: 10px 30px 10px 0;
+    padding: 10px 25px;
+}
+
+.products {
+    width: 1280px;
+    margin: auto;
+    margin-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.product-item {
+    padding: 15px;
+    border: 1px solid black;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
