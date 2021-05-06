@@ -1,60 +1,221 @@
-debugger;
-const products = [{
-        id: 1,
-        title: 'Notebook',
-        // price: 20000
-    },
-    {
-        id: 2,
-        title: 'Mouse',
-        price: 1500
-    },
-    {
-        id: 3,
-        title: 'Keyboard',
-        price: 5000
-    },
-    {
-        id: 4,
-        title: 'Gamepad',
-        price: 4500
-    },
-    {
-        id: 5,
-        title: 'Mouse',
-        price: 1500
-    }, {
-        id: 6,
-        title: 'Keyboard',
-        price: 5000
-    }, {
-        id: 7,
-        title: 'Gamepad',
-        price: 4500
-    },
-];
+// class ProductList {
+//   #goods;
+//   #allProducts;
+//   #privateProp;
+//
+//   constructor(container = '.products') {
+//     this.container = container;
+//     this.#goods = []; // data
+//     this.#allProducts = []; // массив экземпляров товаров на основе this._goods
+//
+//     this.#fetchGoods();
+//     this.#render();
+//   }
+//
+//   get prop() {
+//     return this.#privateProp;
+//   }
+//
+//   set prop(value) {
+//     if (value > 100) throw new Error('Значение больше 100');
+//     this.#privateProp = value;
+//   }
+//
+//   #fetchGoods() {
+//     this.#goods = [
+//       {id: 1, title: 'Notebook', price: 20000},
+//       {id: 2, title: 'Mouse', price: 1500},
+//       {id: 3, title: 'Keyboard', price: 5000},
+//       {id: 4, title: 'Gamepad', price: 4500},
+//     ];
+//   }
+//
+//   #render() {
+//     const block = document.querySelector(this.container);
+//
+//     for (const product of this.#goods) {
+//       // console.log(new ProductItem(product).render());
+//       const productObject = new ProductItem(product);
+//
+//       this.#allProducts.push(productObject);
+//       block.insertAdjacentHTML('beforeend', productObject.render());
+//     }
+//   }
+// }
 
-const renderProduct = (title = 'Название отсутствует', price = 'Цена не указана') => {
-    return `<div class="product-item">
-                <h3>${title}</h3>
-                <p>${price}</p>
-                <button class="by-btn">Добавить в корзину</button>
-              </div>`;
+debugger;
+
+const API = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+
+// В ДЗ переделать на промисы не используя fetch
+// var makeGETRequest = (url, callBack) => {
+// 	var xhr = new XMLHttpRequest();
+// 	xhr.open('GET', url, true);
+// 	xhr.onreadystatechange = () => {
+// 		if (xhr.readyState === 4) {
+// 			if (xhr.status !== 200) {
+// 				console.log('Error');
+// 			} else {
+// 				callBack(xhr.responseText);
+// 			}
+// 		}
+// 	};
+// 	xhr.send();
+// }
+
+let getRequest = (url) => {
+	return new Promise(function (resolve, reject) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', url, true);
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 4) {
+				if (xhr.status !== 200) {
+					reject('error');
+				} else {
+					resolve(JSON.parse(xhr.responseText));
+				}
+			}
+		};
+		xhr.send();
+	})
 };
 
-for (let i = 0; i < products.length; i++) {
-    let price = products[i].price;
-    let title = products[i].title;
-    let productCard = renderProduct(title, price);
-    // document.getElementsByClassName('products').innerHTML = productCard;
+getRequest((`${API}/catalogData.json`))
+	.then((data) => {
+		console.log(data);
+		this._render();
+	}).catch((error) => {
+		console.log(error);
+	})
+
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+class ProductList {
+	constructor(container = '.products') {
+		this.container = container;
+		this._goods = []; // data
+		this._allProducts = []; // массив экземпляров товаров на основе this._goods
+
+		// this._fetchGoods();
+		// this._render();
+		this._getGoods()
+			.then((data) => {
+				this._goods = data;
+				this._render();
+			});
+	}
+
+	addToCart() {
+
+	}
+
+	sum() {
+		return this._goods.reduce((sum, {
+			price
+		}) => sum + price, 0);
+	}
+
+	// _fetchGoods() {
+	// 	return new Promise((resolve, reject) => {
+	// 			getRequest(API + '/catalogData.json', function (data) {
+	// 				console.log(data);
+	// 				this._goods = JSON.parse(data);
+	// 				console.log(this._goods);
+	// 			}.bind(this));
+	// 			resolve(data);
+	// 			if (status != 200) {
+	// 				reject('error');
+	// 			}
+	// 		})
+	// 		.then(data => {
+	// 			this._goods = data;
+	// 			this._render();
+	// 		}).catch(error => console.log('error', error));
+	// }
+
+
+	_getGoods() {
+		return fetch(`${API}/catalogData.json`)
+			.then(result => result.json()).catch(error => console.log(error));
+	}
+
+	_render() {
+		const block = document.querySelector(this.container);
+
+		for (const product of this._goods) {
+			// console.log(new ProductItem(product).render());
+			const productObject = new ProductItem(product);
+
+			this._allProducts.push(productObject);
+			block.insertAdjacentHTML('beforeend', productObject.render());
+		}
+	}
 }
 
-const renderProducts = (list = []) => {
-    const productList = list.map((item) => {
-        return renderProduct(item.title, item.price);
-    });
+class ProductItem {
+	constructor(product, img = 'https://via.placeholder.com/200x150') {
+		this.title = product.title;
+		this.price = product.price;
+		this.id = product.id;
+		this.img = img;
+	}
 
-    document.querySelector('.products').innerHTML = productList.join(' ');
-};
+	render() {
+		return `<div class="product-item" data-id="${this.id}">
+                <img src="${this.img}" alt="Some img">
+                <div class="desc">
+                    <h3>${this.title}</h3>
+                    <p>${this.price} \u20bd</p>
+                    <button class="buy-btn">Купить</button>
+                </div>
+            </div>`;
+	}
+}
 
-renderProducts(products);
+const catalog = new ProductList();
+
+class ProductCart {
+	constructor(product, img = 'https://via.placeholder.com/200x150') {
+		this.title = product.title;
+		this.price = product.price;
+		this.id = product.id;
+		this.img = img;
+		this.quantity = quantity;
+	}
+
+	addProduct() {
+		document.querySelector('.buy-btn').addEventListener('click', () => {
+
+		});
+	}
+
+	deleteProduct() {
+
+	}
+
+	render() {
+
+	}
+}
+
+// const products = [
+//   {id: 1, title: 'Notebook', price: 20000},
+//   {id: 2, title: 'Mouse', price: 1500},
+//   {id: 3, title: 'Keyboard', price: 5000},
+//   {id: 4, title: 'Gamepad', price: 4500},
+// ];
+//
+// const renderProduct = (item, img='https://via.placeholder.com/200x150') => `<div class="product-item" data-id="${this.id}">
+//               <img src="${img}" alt="Some img">
+//               <div class="desc">
+//                   <h3>${item.title}</h3>
+//                   <p>${item.price} \u20bd</p>
+//                   <button class="buy-btn">Купить</button>
+//               </div>
+//           </div>`;
+//
+// const renderProducts = list => {
+// document.querySelector('.products').insertAdjacentHTML('beforeend', list.map(item => renderProduct(item)).join(''));
+// };
+//
+// renderProducts(products);
